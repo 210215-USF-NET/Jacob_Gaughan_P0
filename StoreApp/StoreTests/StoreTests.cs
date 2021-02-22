@@ -8,6 +8,7 @@ namespace StoreTests
     {
         //Arrange
         private Customer customer = new Customer();
+        
         [Theory]
         [InlineData("testing123@revature.net", true)]
         [InlineData("testing123@revature", false)]

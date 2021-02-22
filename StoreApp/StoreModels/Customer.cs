@@ -11,34 +11,42 @@ namespace StoreModels
         private string customerName;
         private string customerEmail;
         public string CustomerName
-        { 
-            get{
+        {
+            get
+            {
                 return customerName;
             }
-            set{
+            set
+            {
                 if (value == null || value.Equals(""))
                 {
                     throw new ArgumentNullException("Customer name can't be empty or null.");
                 }
-                else if (!IsValidName(value)) {
+                else if (!IsValidName(value))
+                {
                     throw new Exception("Customer name can't have numbers in it.");
                 }
                 customerName = value;
             }
         }
 
-        public string CustomerEmail {
-            get{
+        public string CustomerEmail
+        {
+            get
+            {
                 return customerEmail;
             }
-            set{
+            set
+            {
                 if (IsEmptyOrNull(value))
                 {
                     throw new ArgumentNullException("Customer email can't be empty or null.");
                 }
-                else if (!IsValidEmail(value)) {
+                else if (!IsValidEmail(value))
+                {
                     throw new Exception("Must be a valid email address.");
                 }
+
                 customerEmail = value;
             }
         }
@@ -82,5 +90,7 @@ namespace StoreModels
                 return false;
             }
         }
+
+        public override string ToString() => $"Customer Details: \n\t Name: {this.CustomerName} \n\t Email: {this.CustomerEmail}";
     }
 }

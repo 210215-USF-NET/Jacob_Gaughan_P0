@@ -1,5 +1,6 @@
 using System;
 using StoreModels;
+using StoreBL;
 
 namespace StoreUI
 {
@@ -9,104 +10,161 @@ namespace StoreUI
 
     public class Menu : IMenu
     {
+        private string userType;
+
         public void Start()
         {
             Boolean stayMainMenu = true;
 
+            Console.WriteLine("Hello! Welcome to Jake's Ice Creamery! :D");
+
+            do
+            {
                 //Main Menu prompt
-                Console.WriteLine("Hello!  Welcome to Jake's Ice Creamery");
                 Console.WriteLine("[0] Shop Products");
                 Console.WriteLine("[1] Management");
                 Console.WriteLine("[2] Exit");
-
-            do
-            {
                 Console.WriteLine("Enter a number: ");
-                try
+
+                //get user input
+                string userInput = Console.ReadLine();
+
+                switch (userInput)
                 {
-                    //get user input
-                    int userInput = int.Parse(Console.ReadLine());
-                    stayMainMenu = SelectOption(userInput);
+                    case "0":
+                        CustomerInfo();
+                        break;
+                    case "1":
+                        Management();
+                        break;
+                    case "2":
+                        ExitUI();
+                        break;
+                    default:
+                        Console.WriteLine("Not part of menu! Please try again.");
+                        continue;
                 }
-                catch (Exception)
-                {
-                    Console.WriteLine("Invalid input. Please enter a number!");
-                    continue;
-                }
-            }while(stayMainMenu);
+            } while (stayMainMenu);
         }
 
-        public bool SelectOption(int userInput)
+        public void CustomerInfo()
         {
-            switch (userInput)
-            {
-                case 0:
-                    ShopProducts();
-                    break;
-                case 1:
-                    Console.WriteLine("1");
-                    break;
-                case 2:
-                    Console.WriteLine("2");
-                    ExitUI();
-                    return false;
-                default:
-                    Console.WriteLine("Not part of menu! Please try again.");
-                    break;
-            }
-            return true;
-        }
-
-        public void ShopProducts()
-        {
+            userType = "Customer";
             bool stayShopProductsMenu = true;
 
-            Console.WriteLine("Are you a new or returning customer?");
-            Console.WriteLine("[0] Returning customer");
-            Console.WriteLine("[1] New Customer");
-            Console.WriteLine("[2] Go back");
-            Console.WriteLine("[3] Exit");
+            Console.WriteLine("Are you a returning or a new customer?");
 
             do
             {
+                Console.WriteLine("[0] Returning customer");
+                Console.WriteLine("[1] New Customer");
+                Console.WriteLine("[2] Go back");
+                Console.WriteLine("[3] Exit");
                 Console.WriteLine("Enter a number: ");
-                try
-                {
-                    //get user input
-                    int userInput = int.Parse(Console.ReadLine());
 
-                    switch (userInput)
-                    {
-                        case 0:
-                            Console.WriteLine("Please enter email: ");
-                            Console.ReadLine();
-                            //TODO: Check input for matching customer
-                            break;
-                        case 1:
-                            Customer newCustomer = new Customer();
-                            Console.WriteLine("Please enter name: ");
-                            newCustomer.CustomerName = Console.ReadLine();
-                            Console.WriteLine("Please enter email: ");
-                            newCustomer.CustomerEmail = Console.ReadLine();
-                            break;
-                        case 2:
-                            Console.WriteLine("2");
-                            Start();
-                            break;
-                        case 3:
-                            ExitUI();
-                            break;
-                        default:
-                            Console.WriteLine("Not part of menu! Please try again.");
-                            break;
-                    }
-                }
-                catch (Exception)
+                //get user input
+                string userInput = Console.ReadLine();
+
+                switch (userInput)
                 {
-                    Console.WriteLine("Invalid input. Try again!");
-                    continue;
+                    case "0":
+                        Console.WriteLine("Please enter name: ");
+                        Console.ReadLine();
+                        //TODO: Check input for matching customer
+                        break;
+                    case "1":
+                        Customer newCustomer = new Customer();
+                        Console.WriteLine("Please enter name: ");
+                        newCustomer.CustomerName = Console.ReadLine();
+                        Console.WriteLine("Please enter email: ");
+                        newCustomer.CustomerEmail = Console.ReadLine();
+
+                        Console.WriteLine($"Welcome {newCustomer.CustomerName}!");
+
+                        StartShopping();
+                        break;
+                    case "2":
+                        Console.WriteLine("2");
+                        Start();
+                        break;
+                    case "3":
+                        ExitUI();
+                        break;
+                    default:
+                        Console.WriteLine("Not part of menu! Please try again.");
+                        continue;
                 }
-            }while(stayShopProductsMenu);
+            } while (stayShopProductsMenu);
+        }
+        public void Management()
+        {
+            userType = "manager";
+            ChooseLocation(userType);
+        }
+
+        public void StartShopping(){
+            userType = "customer";
+            ChooseLocation(userType);
+        }
+
+        public void ChooseLocation(string userType)
+        {
+            if(userType == "customer")
+            {
+                Console.WriteLine("Start Shopping!");
+            }
+            else
+            {
+                Console.WriteLine("Restocking some shelves I see.");
+            }
+
+            bool choosingLocation = true;
+            string location = "";
+
+            Console.WriteLine("Choose Location");
+
+            do
+            {
+                Console.WriteLine("[0] Hays, KS (67601)");
+                Console.WriteLine("[1] Durango, CO (81302)");
+                Console.WriteLine("[2] Go back");
+                Console.WriteLine("[3] Exit");
+
+                Console.WriteLine("Enter a number: ");
+
+                //get user input
+                string userInput = Console.ReadLine();
+
+                switch (userInput)
+                {
+                    case "0":
+                        location = "Hays";
+                        //Select Hays, KS location
+                        GoToLocation(location);
+                        break;
+                    case "1":
+                        location = "Durango";
+                        //Select Durango, CO location
+                        GoToLocation(location);
+                        break;
+                    case "2":
+                        //Go back to start
+                        Start();
+                        break;
+                    case "3":
+                        ExitUI();
+                        break;
+                    default:
+                        Console.WriteLine("Not part of menu! Please try again.");
+                        continue;
+                }
+            } while (choosingLocation);
+        }
+
+        public void GoToLocation(string location)
+        {
+            Console.WriteLine($"Welcome to our {location} store!");
+            ExitUI();
         }
 
         public void ExitUI()
