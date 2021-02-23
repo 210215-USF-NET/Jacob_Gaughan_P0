@@ -1,14 +1,14 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using StoreDL;
 using StoreModels;
 
 namespace StoreBL
 {
-    public class AppBL : IAppBL
+    public class CustomerBL : ICustomerBL
     {
-        private IStoreRepository _repo;
-        public AppBL(IStoreRepository repo){
+        private ICustomerRepository _repo;
+        public CustomerBL(ICustomerRepository repo){
             _repo = repo;
         }
         public void AddCustomer(Customer newCustomer)

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using StoreModels;
 using System.IO;
 using System.Text.Json;
@@ -6,10 +6,10 @@ using System;
 
 namespace StoreDL
 {
-    public class StoreRepoFile : IStoreRepository
+    public class CustomerRepoFile : ICustomerRepository
     {
         private string jsonString;
-        private string filePath = "../StoreDL/StorageFiles/StoreFiles.json";
+        private string filePath = "../StoreDL/FileStorage/CustomerFiles.json";
         public Customer AddCustomer(Customer newCustomer)
         {
             List<Customer> customersFromFile = GetCustomers();

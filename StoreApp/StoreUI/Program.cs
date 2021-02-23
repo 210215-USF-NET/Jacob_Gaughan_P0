@@ -14,7 +14,7 @@ namespace StoreUI
         static void Main(string[] args)
         {
             //call method that starts main user interface
-            IMenu menu = new Menu();
+            IMenu menu = new Menu(new CustomerBL(new CustomerRepoFile()));
             menu.Start();
         }
     }

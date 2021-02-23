@@ -22,8 +22,8 @@ namespace StoreTests
 
         [Theory]
         [InlineData("John Doe", true)]
-        [InlineData("Jacob5Gaughan", false)]
-        [InlineData("Mike 12",  false)]
+        [InlineData("JohnDoe 12", false)]
+        [InlineData("Jo5hn Doe", false)]
         public void IsName(string name, bool expected)
         {
             bool result = customer.IsValidName(name);

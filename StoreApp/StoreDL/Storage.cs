@@ -4,6 +4,6 @@ namespace StoreDL
 {
     public class Storage
     {
-            public static List<Customer> AllCustomers = new List<Customer>();
+        public static List<Customer> AllCustomers = new List<Customer>();
     }
 }

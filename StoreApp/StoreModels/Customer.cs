@@ -8,13 +8,16 @@ namespace StoreModels
     /// </summary>
     public class Customer
     {
-        private string customerName;
+        private string customerLastName;
+        private string customerFirstName;
         private string customerEmail;
-        public string CustomerName
+        private string prevOrders;
+
+        public string CustomerFirstName
         {
             get
             {
-                return customerName;
+                return customerFirstName;
             }
             set
             {
@@ -26,7 +29,27 @@ namespace StoreModels
                 {
                     throw new Exception("Customer name can't have numbers in it.");
                 }
-                customerName = value;
+                customerFirstName = value;
+            }
+        }
+
+        public string CustomerLastName
+        {
+            get
+            {
+                return customerLastName;
+            }
+            set
+            {
+                if (value == null || value.Equals(""))
+                {
+                    throw new ArgumentNullException("Customer name can't be empty or null.");
+                }
+                else if (!IsValidName(value))
+                {
+                    throw new Exception("Customer name can't have numbers in it.");
+                }
+                customerLastName = value;
             }
         }
 
@@ -51,8 +74,16 @@ namespace StoreModels
             }
         }
 
-        public PrevOrders PrevOrders { get; set; }
-        //TODO: add more properties to identify the customer
+        public string PrevOrders {
+            get
+            {
+                return prevOrders;
+            }
+            set
+            {
+                prevOrders = value;
+            }
+        }
 
         public bool IsEmptyOrNull(string str)
         {
@@ -91,6 +122,6 @@ namespace StoreModels
             }
         }
 
-        public override string ToString() => $"Customer Details: \n\t Name: {this.CustomerName} \n\t Email: {this.CustomerEmail}";
+        public override string ToString() => $"Customer Details: \n\t Name: {this.CustomerFirstName} \n\t Email: {this.CustomerEmail}";
     }
 }
