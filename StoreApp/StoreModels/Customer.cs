@@ -12,7 +12,20 @@ namespace StoreModels
         private string customerFirstName;
         private string customerEmail;
         private string prevOrders;
+        private int customerID;
 
+        public int CustomerID
+        {
+            get
+            {
+                return customerID;
+            }
+            set
+            {
+                customerID = value;
+                value++;
+            }
+        }
         public string CustomerFirstName
         {
             get
