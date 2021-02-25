@@ -374,3 +374,6 @@ obj/
 *.code-workspace
 
 # End of https://www.toptal.com/developers/gitignore/api/vscode,csharp,dotnetcore
+
+# ignore appsettings for security
+**/appsettings.json
