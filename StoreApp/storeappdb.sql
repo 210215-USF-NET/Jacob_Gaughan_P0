@@ -12,18 +12,19 @@ create table customers
 	name varchar(50) not null,
 	email varchar(50) not null
 );
-create table locations
-(
-	id int identity primary key,
-	city varchar(40) not null,
-	state varchar(2) not null,
-	zipcode varchar(12) not null
-);
 create table products
 (
 	id int identity primary key,
 	name varchar(50) not null,
 	price decimal(6,2) not null
+);
+create table locations
+(
+	id int identity primary key,
+	city varchar(40) not null,
+	state varchar(2) not null,
+	zipcode varchar(12) not null,
+	product int references products(id)
 );
 create table item
 (
@@ -36,7 +37,7 @@ create table orders
 (
 	id int identity primary key,
 	total decimal(7,2) not null,
-	date datetime not null,
+	date smalldatetime not null,
 	customer int references customers(id),
 	location int references locations(id)
 );
@@ -58,4 +59,8 @@ select * from customers;
 
 select * from locations;
 
+select * from products;
+
 select * from customers inner join orders on customers.id = orders.customer;
+
+select * from products left join locations on products.id = locations.product;

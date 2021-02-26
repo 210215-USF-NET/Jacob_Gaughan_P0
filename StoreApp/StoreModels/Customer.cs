@@ -1,5 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace StoreModels
 {
@@ -10,8 +11,7 @@ namespace StoreModels
     {
         private string customerName;
         private string customerEmail;
-        private string prevOrders;
-        public Orders Orders { get; set; }
+        public Order Order { get; set; }
         public int? Id { get; set; }
         public string CustomerName
         {
