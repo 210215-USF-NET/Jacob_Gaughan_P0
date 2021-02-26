@@ -204,15 +204,11 @@ namespace StoreUI
 
             public void ShopInventory(int id)
             {
-                List<int> productIDs = new List<int>();
-                List<string> productNames = new List<string>();
                 foreach (var item in _productBL.GetProducts())
                 {
                     if (item.LocationID == id)
                     {
                         Console.WriteLine($"[{item.ProductID}] {item.ProductName} ${item.ProductPrice}");
-                        productIDs.Add(item.ProductID);
-                        productNames.Add(item.ProductName);
                     }
                 }
 
@@ -225,22 +221,10 @@ namespace StoreUI
                         if (item.LocationID == id)
                         {
                             Console.WriteLine($"[{item.ProductID}] {item.ProductName} ${item.ProductPrice}");
-                            productIDs.Add(item.ProductID);
-                            productNames.Add(item.ProductName);
                         }
                     }
                     Console.WriteLine("Enter number of item you want to purchase.");
                     int userInput = int.Parse(Console.ReadLine());
-
-                    if (userInput >= productIDs[0] && userInput < productIDs[productIDs.Count])
-                    {
-                        Console.WriteLine($"{productNames[userInput]} was added to your cart.");
-                        //TODO Add to cart method
-                    }
-                    else
-                    {
-                        Console.WriteLine("Please enter a valid product number.");
-                    }
 
                     bool isCustomerStillShopping = true;
                     do
@@ -276,7 +260,7 @@ namespace StoreUI
             public void EditInventory(int id)
             {
                 _locationBL.GetLocations();
-                Console.WriteLine($"You are editing. {_locationBL}");
+                Console.WriteLine($"You are editing. {id}");
             }
 
         public void ExitUI()

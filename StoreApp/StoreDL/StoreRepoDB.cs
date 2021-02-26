@@ -33,17 +33,17 @@ namespace StoreDL
             return _context.Customers.Include("Orders").AsNoTracking().Select(x => _mapper.ParseCustomer(x)).ToList();
         }
 
-        public List<Location> GetLocations()
+        public List<Model.Location> GetLocations()
         {
             return _context.Locations.Select(x => _mapper.ParseLocation(x)).ToList();
         }
 
-        public List<Product> GetProducts()
+        public List<Model.Product> GetProducts()
         {
             return _context.Products.Select(x => _mapper.ParseProduct(x)).ToList();
         }
         
-        public Product AddProduct(Product newProduct)
+        public Model.Product AddProduct(Product newProduct)
         {
             _context.Products.Add(_mapper.ParseProduct(newProduct));
             _context.SaveChanges();
