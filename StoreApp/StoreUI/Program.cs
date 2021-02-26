@@ -2,6 +2,10 @@
 using StoreModels;
 using StoreBL;
 using StoreDL;
+using StoreDL.Entities;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using Microsoft.EntityFrameworkCore;
 
 namespace StoreUI
 {
@@ -13,12 +17,22 @@ namespace StoreUI
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            //call method that starts main user interface
-            IMenu menu = new Menu(
-                new CustomerBL(new CustomerRepoFile()),
-                new LocationBL(new LocationRepoFile()),
-                new ProductBL(new ProductRepoFile())
-                );
+            //get the config file
+            var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+            //setting up db connection
+            string connectionString = configuration.GetConnectionString("StoreDB");
+            DbContextOptions<storeDBContext> options = new DbContextOptionsBuilder<storeDBContext>()
+            .UseSqlServer(connectionString)
+            .Options;
+
+            //using statement used to dispose of the context when its no longer used 
+            using var context = new storeDBContext(options);
+
+            IMenu menu = new Menu2(new CustomerBL(new CustomerRepoDB(context, new CustomerMapper())));
             menu.Start();
         }
     }

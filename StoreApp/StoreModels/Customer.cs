@@ -8,29 +8,16 @@ namespace StoreModels
     /// </summary>
     public class Customer
     {
-        private string customerLastName;
-        private string customerFirstName;
+        private string customerName;
         private string customerEmail;
         private string prevOrders;
-        private int customerID;
-
-        public int CustomerID
+        public Orders Orders { get; set; }
+        public int? Id { get; set; }
+        public string CustomerName
         {
             get
             {
-                return customerID;
-            }
-            set
-            {
-                customerID = value;
-                value++;
-            }
-        }
-        public string CustomerFirstName
-        {
-            get
-            {
-                return customerFirstName;
+                return customerName;
             }
             set
             {
@@ -42,27 +29,7 @@ namespace StoreModels
                 {
                     throw new Exception("Customer name can't have numbers in it.");
                 }
-                customerFirstName = value;
-            }
-        }
-
-        public string CustomerLastName
-        {
-            get
-            {
-                return customerLastName;
-            }
-            set
-            {
-                if (value == null || value.Equals(""))
-                {
-                    throw new ArgumentNullException("Customer name can't be empty or null.");
-                }
-                else if (!IsValidName(value))
-                {
-                    throw new Exception("Customer name can't have numbers in it.");
-                }
-                customerLastName = value;
+                customerName = value;
             }
         }
 
@@ -84,17 +51,6 @@ namespace StoreModels
                 }
 
                 customerEmail = value;
-            }
-        }
-
-        public string PrevOrders {
-            get
-            {
-                return prevOrders;
-            }
-            set
-            {
-                prevOrders = value;
             }
         }
 
@@ -135,6 +91,6 @@ namespace StoreModels
             }
         }
 
-        public override string ToString() => $"Customer Details: \n\t Name: {this.CustomerFirstName} \n\t Email: {this.CustomerEmail}";
+        public override string ToString() => $"Customer Information: \n\t Name: {this.CustomerName} \n\t Email: {this.CustomerEmail}";
     }
 }
