@@ -9,13 +9,13 @@ namespace StoreDL.Entities
     {
         public Product()
         {
-            Items = new HashSet<Item>();
+            Inventories = new HashSet<Inventory>();
         }
 
         public int Id { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
 
-        public virtual ICollection<Item> Items { get; set; }
+        public virtual ICollection<Inventory> Inventories { get; set; }
     }
 }

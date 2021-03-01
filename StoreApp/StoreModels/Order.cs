@@ -7,11 +7,11 @@ namespace StoreModels
     /// </summary>
     public class Order
     {
-        public Customer Customer { get; set; }
-        public Location Location { get; set; }
+        public int CustomerId { get; set; }
+        public int LocationId { get; set; }
         public decimal Total { get; set; }
         public DateTime Date { get; set; }
-        public int? Id { get; set; }
-        public override string ToString() => $"\n\t Location: {this.Location} \n\t Date: {this.Date} \n\t Total: {this.Total}";
+        public int Id { get; set; }
+        public override string ToString() => $"\t Customer ID: {this.CustomerId} \n\t Location ID: {this.LocationId} \n\t Date: {this.Date} \n\t Total: ${this.Total}";
     }
 }

@@ -2,8 +2,6 @@ using Model = StoreModels;
 using Entity = StoreDL.Entities;
 using StoreModels;
 using StoreDL.Entities;
-using System;
-using StoreDL;
 namespace StoreDL
 {
     public class StoreMapper : IStoreMapper
@@ -21,7 +19,7 @@ namespace StoreDL
         public Entity.Customer ParseCustomer(Model.Customer customer)
         {
             //when customer is a new customer, NO id is set
-            if(customer.Id == null)
+            if(customer.Id == 0)
             {
                 return new Entity.Customer
                 {
@@ -44,6 +42,8 @@ namespace StoreDL
             {
                 Total = order.Total,
                 Date = order.Date,
+                CustomerId = order.CustomerId,
+                LocationId = order.LocationId,
                 Id = order.Id
             };
         }
@@ -51,22 +51,24 @@ namespace StoreDL
         public Entity.Order ParseOrder(Model.Order order)
         {
             //when customer has no orders, NO id is set
-            if(order.Id == null)
+            if(order.Id == 0)
             {
                 return new Entity.Order
                 {
-                    Customer = order.Customer.Id,
                     Total = order.Total,
                     Date = order.Date,
+                    CustomerId = order.CustomerId,
+                    LocationId = order.LocationId
                 };
             }
             //for updating and deleting
             return new Entity.Order
             {
-                Customer = order.Customer.Id,
                 Total = order.Total,
                 Date = order.Date,
-                Id = (int)order.Id
+                CustomerId = order.CustomerId,
+                LocationId = order.LocationId,
+                Id = order.Id
             };
         }
 
@@ -74,20 +76,22 @@ namespace StoreDL
         {
             return new Model.Location
             {
+                Address = location.Address,
                 City = location.City,
                 State = location.State,
                 Zipcode = location.Zipcode,
-                LocationID = location.Id
+                Id = location.Id
             };
         }
 
         public Entity.Location ParseLocation(Model.Location location)
         {
             //when there are no locations, NO id is set
-            if(location == null)
+            if(location.Id == 0)
             {
                 return new Entity.Location
                 {
+                    Address = location.Address,
                     City = location.City,
                     State = location.State,
                     Zipcode = location.Zipcode
@@ -96,10 +100,11 @@ namespace StoreDL
             //for updating and deleting
             return new Entity.Location
             {
+                Address = location.Address,
                 City = location.City,
                 State = location.State,
                 Zipcode = location.Zipcode,
-                Id = (int)location.LocationID
+                Id = location.Id
             };
         }
 
@@ -109,14 +114,14 @@ namespace StoreDL
             {
                 ProductName = product.Name,
                 ProductPrice = product.Price,
-                ProductID = product.Id
+                ProductID = product.Id,
             };
         }
 
         public Entity.Product ParseProduct(Model.Product product)
         {
             //when there are no products, NO id is set
-            if(product == null)
+            if(product.Id == 0)
             {
                 return new Entity.Product
                 {
@@ -132,5 +137,37 @@ namespace StoreDL
                 Id = product.ProductID
             };
         }
+        public Model.Inventory ParseInventory(Entity.Inventory inventory)
+        {
+            return new Model.Inventory
+            {
+                Id = inventory.Id,
+                Quantity = inventory.Quantity,
+                ProductId = inventory.ProductId,
+                LocationId = inventory.LocationId
+            };
+        }
+        public Entity.Inventory ParseInventory(Model.Inventory inventory)
+        {
+            //when there are no inventories, NO id is set
+            if(inventory.Id == 0)
+            {
+                return new Entity.Inventory
+                {
+                    Quantity = inventory.Quantity,
+                    ProductId = inventory.ProductId,
+                    LocationId = inventory.LocationId
+                };
+            }
+            //for updating and deleting
+            return new Entity.Inventory
+            {
+                Id = inventory.Id,
+                Quantity = inventory.Quantity,
+                ProductId = inventory.ProductId,
+                LocationId = inventory.LocationId
+            };
+        }
+
     }
 }

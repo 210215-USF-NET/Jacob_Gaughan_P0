@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace StoreModels
 {
     /// <summary>
@@ -7,9 +5,12 @@ namespace StoreModels
     /// </summary>
     public class Location
     {
+        public string Address { get; set; }
         public string City { get; set; }
         public string State { get; set; }
         public string Zipcode { get; set; }
-        public int LocationID { get; set; }
+        public int Id { get; set; }
+
+        public override string ToString() => $"{this.Address} {this.City}, {this.State} ({this.Zipcode})";
     }
 }

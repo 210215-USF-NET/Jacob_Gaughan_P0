@@ -1,3 +1,5 @@
+using System;
+
 namespace StoreModels
 {
     //This class should contain all necessary fields to define a product.
@@ -8,5 +10,6 @@ namespace StoreModels
         public int LocationID { get; set; }
         public string ProductName { get; set; }
         public decimal ProductPrice { get; set; }
+        public int? Id { get; set; }
     }
 }

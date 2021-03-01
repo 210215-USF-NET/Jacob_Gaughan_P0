@@ -16,6 +16,15 @@ namespace StoreBL
             _repo.AddProduct(newProduct);
         }
 
+        public decimal GetProductPrice(int productId)
+        {
+            return _repo.GetProductPrice(productId);
+        }
+        public Product GetProductById(int productId)
+        {
+            return _repo.GetProductById(productId);
+        }
+
         public List<Product> GetProducts()
         {
             return _repo.GetProducts();

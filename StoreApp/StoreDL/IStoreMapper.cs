@@ -9,11 +9,13 @@ namespace StoreDL
     {
         Model.Customer ParseCustomer(Entity.Customer customer);
         Entity.Customer ParseCustomer(Model.Customer customer);
-        Model.Order ParseOrder(Entity.Order Order);
-        Entity.Order ParseOrder(Model.Order Order);
-        Model.Location ParseLocation(Entity.Location Location);
-        Entity.Location ParseLocation(Model.Location Location);
-        Model.Product ParseProduct(Entity.Product Product);
-        Entity.Product ParseProduct(Model.Product Product);
+        Model.Order ParseOrder(Entity.Order order);
+        Entity.Order ParseOrder(Model.Order order);
+        Model.Location ParseLocation(Entity.Location location);
+        Entity.Location ParseLocation(Model.Location location);
+        Model.Product ParseProduct(Entity.Product product);
+        Entity.Product ParseProduct(Model.Product product);
+        Model.Inventory ParseInventory(Entity.Inventory inventory);
+        Entity.Inventory ParseInventory(Model.Inventory inventory);
     }
 }

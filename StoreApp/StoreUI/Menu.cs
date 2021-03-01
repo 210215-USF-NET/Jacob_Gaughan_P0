@@ -2,7 +2,7 @@ using System;
 using StoreModels;
 using StoreBL;
 using System.Collections.Generic;
-using System.Collections;
+using System.Linq;
 
 namespace StoreUI
 {
@@ -15,15 +15,16 @@ namespace StoreUI
         private ICustomerBL _customerBL;
         private ILocationBL _locationBL;
         private IProductBL _productBL;
-        public Menu(ICustomerBL customerBL, ILocationBL locationBL, IProductBL productBL)
+        private IOrderBL _orderBL;
+        private IInventoryBL _inventoryBL;
+        public Menu(ICustomerBL customerBL, ILocationBL locationBL, IProductBL productBL, IOrderBL orderBL, IInventoryBL inventoryBL)
         {
             _customerBL = customerBL;
             _locationBL = locationBL;
             _productBL = productBL;
+            _orderBL = orderBL;
+            _inventoryBL = inventoryBL;
         }
-
-        private string userType;
-
         public void Start()
         {
             bool stayMainMenu = true;
@@ -45,15 +46,12 @@ namespace StoreUI
                 switch (userInput)
                 {
                     case "0":
-                        userType = "customer";
                         AddNewCustomer();
                         break;
                     case "1":
-                        userType = "customer";
                         SearchCustomers();
                         break;
                     case "2":
-                        userType = "manager";
                         ChooseLocation();
                         break;
                     case "3":
@@ -80,13 +78,13 @@ namespace StoreUI
             Console.WriteLine("Please enter customers name: ");
             newCustomer.CustomerName = Console.ReadLine();
             Console.WriteLine("Please enter email: ");
-            newCustomer.CustomerEmail = Console.ReadLine();
+            newCustomer.CustomerEmail = Console.ReadLine(); ;
 
             _customerBL.AddCustomer(newCustomer);
 
             Console.WriteLine($"New customer added! Welcome {newCustomer.CustomerName}!");
 
-            StartShopping(newCustomer.Order);
+            StartShopping(newCustomer);
         }
         public void SearchCustomers()
         {
@@ -99,18 +97,19 @@ namespace StoreUI
             {
                 if (item.CustomerName.ToLower() == userInputName.ToLower())
                 {
-                    Console.WriteLine($"Customer found! Welcome {item.CustomerName}!");
-                    StartShopping(item.Order);
+                    Console.WriteLine($"\nCustomer found! Welcome {item.CustomerName}!");
+                    Console.WriteLine(item.ToString());
+                    StartShopping(item);
                 }
             }
             Console.WriteLine($"Customer {userInputName} was not found.");
             Start();
         }
-        public void StartShopping(Order prevOrders)
+        public void StartShopping(Customer currentCustomer)
         {
-            bool stayMainMenu = true;
+            bool stayCustomerMenu = true;
 
-            Console.WriteLine("Customer menu:");
+            Console.WriteLine($"\nCustomer {currentCustomer.CustomerName}'s menu:");
 
             do
             {
@@ -126,10 +125,10 @@ namespace StoreUI
                 switch (userInput)
                 {
                     case "0":
-                        ViewPreviousOrders(prevOrders);
+                        ViewPreviousOrders(currentCustomer.Id);
                         break;
                     case "1":
-                        ChooseLocation();
+                        ChooseLocation(currentCustomer.Id);
                         break;
                     case "2":
                         ExitUI();
@@ -142,22 +141,23 @@ namespace StoreUI
                         continue;
                 }
 
-            } while (stayMainMenu);
+            } while (stayCustomerMenu);
         }
-        public void ChooseLocation()
+        public void ChooseLocation(int custId)
         {
             bool stayChooseLocation = true;
 
-            Console.WriteLine("Choose a location.");
+            Console.WriteLine("\nChoose a location.");
             do
             {
                 //display locations
                 int i = 1;
                 foreach (var item in _locationBL.GetLocations())
                 {
-                    Console.WriteLine($"[{item.LocationID}] {item.City}, {item.State} ({item.Zipcode})");
+                    Console.WriteLine($"[{item.Id}] {item.Address} {item.City}, {item.State} ({item.Zipcode})");
                     i++;
                 }
+                i++;
                 Console.WriteLine($"[{i}] Exit");
                 Console.WriteLine("Enter a number: ");
 
@@ -166,16 +166,9 @@ namespace StoreUI
 
                 foreach (var item in _locationBL.GetLocations())
                 {
-                    if (userInput == item.LocationID)
+                    if (userInput == item.Id)
                     {
-                        if (userType == "customer")
-                        {
-                            ShopInventory(item.LocationID);
-                        }
-                        else if (userType == "manager")
-                        {
-                            EditInventory(item.LocationID);
-                        }
+                        ShopInventory(item.Id, custId);
                     }
                     else if (userInput == i)
                     {
@@ -184,88 +177,296 @@ namespace StoreUI
                 }
             } while (stayChooseLocation);
         }
-
-        public void ViewPreviousOrders(Order prevOrders)
+        public void ChooseLocation()
         {
-            //check if customer has made an order
-            if (prevOrders == null)
-            {
-                Console.WriteLine($"You have not placed any orders.");
-            }
-            else
-            {
-                //Print out all previous orders
-                Console.WriteLine($"Your previous orders:");
-                Console.WriteLine(prevOrders.ToString());
-            }
-            Console.WriteLine("Press ENTER to contine:");
-            Console.ReadLine();
-        }
+            bool stayChooseLocation = true;
 
-            public void ShopInventory(int id)
+            Console.WriteLine("\nChoose a location.");
+            do
             {
-                foreach (var item in _productBL.GetProducts())
+                //display locations
+                int i = 1;
+                int j;
+                foreach (var item in _locationBL.GetLocations())
                 {
-                    if (item.LocationID == id)
+                    Console.WriteLine($"[{item.Id}] {item.Address} {item.City}, {item.State} ({item.Zipcode})");
+                    i++;
+                }
+                j = i;
+                Console.WriteLine($"[{j}] Add New Location");
+                i++;
+                Console.WriteLine($"[{i}] Exit");
+                Console.WriteLine("Enter a number: ");
+
+                //get user input
+                int userInput = int.Parse(Console.ReadLine());
+
+                foreach (var item in _locationBL.GetLocations())
+                {
+                    if (userInput == item.Id)
                     {
-                        Console.WriteLine($"[{item.ProductID}] {item.ProductName} ${item.ProductPrice}");
+                        EditInventory(item.Id);
+                    }
+                    else if (userInput == j)
+                    {
+                        AddNewLocation();
+                        continue;
+                    }
+                    else if (userInput == i)
+                    {
+                        ExitUI();
                     }
                 }
+            } while (stayChooseLocation);
+        }
+        public void AddNewLocation()
+        {
+            //create new Location
+            Location newLocation = new Location();
+            Console.WriteLine("Enter locations address number and street:");
+            newLocation.Address = Console.ReadLine();
+            Console.WriteLine("Enter locations city:");
+            newLocation.City = Console.ReadLine();
+            Console.WriteLine("Enter locations state:");
+            newLocation.State = Console.ReadLine();
+            Console.WriteLine("Enter locations zipcode:");
+            newLocation.Zipcode = Console.ReadLine();
 
-                bool stillShopping = true;
+            _locationBL.AddLocation(newLocation);
 
-                do
+            Console.WriteLine($"New Location added at {newLocation.Address} {newLocation.City}, {newLocation.State} ({newLocation.Zipcode})!");
+        }
+        public void ViewPreviousOrders(int currentCustomerId)
+        {
+            bool ordersFound = false;
+
+            foreach (var item in _orderBL.GetOrders())
+            {
+                if (item.CustomerId == currentCustomerId)
                 {
-                    foreach (var item in _productBL.GetProducts())
+                    Console.WriteLine(item.ToString());
+                    ordersFound = true;
+                }
+            }
+
+            if (!ordersFound)
+            {
+                Console.WriteLine("No orders have been placed.");
+            }
+
+            Console.WriteLine("Sort orders by:");
+            Console.WriteLine("[0] Newest - Oldest");
+            Console.WriteLine("[1] Oldest - Newest");
+            string sortBy = Console.ReadLine();
+
+            switch (sortBy)
+            {
+                case "0":
+                    PrevOrdersNewToOld(currentCustomerId);
+                    break;
+                case "1":
+                    PrevOrdersOldToNew(currentCustomerId);
+                    break;
+            };
+        }
+        public void PrevOrdersNewToOld(int custId)
+        {
+            foreach (Order order in _orderBL.GetOrders().OrderByDescending(o => o.Date).ToList())
+            {
+                if (order.CustomerId == custId)
+                {
+                    Console.WriteLine(order.ToString());
+                }
+            }
+        }
+        public void PrevOrdersOldToNew(int custId)
+        {
+            foreach (Order order in _orderBL.GetOrders().OrderBy(o => o.Date).ToList())
+            {
+                if (order.CustomerId == custId)
+                {
+                    Console.WriteLine(order.ToString());
+                }
+            }
+        }
+        public void ShopInventory(int locId, int custId)
+        {
+            bool stillShopping = true;
+            decimal runningTotal = 0.00m;
+            do
+            {
+                Console.WriteLine("Which product you would like to purchase?");
+
+                foreach (var item in _locationBL.GetLocations())
+                {
+                    if (item.Id == locId)
                     {
-                        if (item.LocationID == id)
+                        foreach (var product in _productBL.GetProducts())
                         {
-                            Console.WriteLine($"[{item.ProductID}] {item.ProductName} ${item.ProductPrice}");
+                            //removed "\t{_inventoryBL.GetQuantity(product.ProductID, locId)}" in stock because it was ruining everything
+                            Console.WriteLine($"[{product.ProductID}] {product.ProductName} {product.ProductPrice}/Pint");
                         }
                     }
-                    Console.WriteLine("Enter number of item you want to purchase.");
-                    int userInput = int.Parse(Console.ReadLine());
+                }
+                Console.WriteLine("Enter a number:");
+                int userInputKind = int.Parse(Console.ReadLine());
 
-                    bool isCustomerStillShopping = true;
-                    do
+                Console.WriteLine("How many pints would you like?");
+                int userInputPints = int.Parse(Console.ReadLine());
+
+                if (userInputPints <= _inventoryBL.GetQuantity(userInputKind, locId))
+                {
+                    Inventory updatedInventory = new Inventory();
+                    updatedInventory.Quantity = _inventoryBL.GetQuantity(userInputKind, locId) - userInputPints;
+                    _inventoryBL.UpdateInventory(_inventoryBL.GetInventoryById(userInputKind, locId), updatedInventory);
+                    runningTotal += (_productBL.GetProductPrice(userInputKind) * (decimal)userInputPints);
+                }
+                else
+                {
+                    Console.WriteLine("Sorry we do not have that in stock.");
+                }
+
+                runningTotal = runningTotal + _productBL.GetProductPrice(userInputKind);
+
+                bool isCustomerStillShopping = true;
+                do
+                {
+                    Console.WriteLine("Would you like to keep shopping?");
+                    Console.WriteLine("[0] Yes, browse more products.");
+                    Console.WriteLine("[1] No, Checkout.");
+
+                    string inputKeepShopping = Console.ReadLine();
+
+                    switch (inputKeepShopping)
                     {
-                        Console.WriteLine("Would you like to keep shopping?");
-                        Console.WriteLine("[0] Yes");
-                        Console.WriteLine("[1] No");
-                        Console.WriteLine("[2] Back to locations");
+                        case "0":
+                            isCustomerStillShopping = false;
+                            break;
+                        case "1":
+                            CheckoutItems(runningTotal, locId, custId);
+                            break;
+                        default:
+                            Console.WriteLine("Not part of menu! Please try again.");
+                            break;
+                    }
+                } while (isCustomerStillShopping);
 
-                        string inputKeepShopping = Console.ReadLine();
+            } while (stillShopping);
 
-                        switch (inputKeepShopping)
-                        {
-                            case "0":
-                                isCustomerStillShopping = false;
-                                break;
-                            case "1":
-                                isCustomerStillShopping = false;
-                                break;
-                            case "2":
-                                ChooseLocation();
-                                break;
-                            default:
-                                Console.WriteLine("Not part of menu! Please try again.");
-                                break;
-                        }
-                    } while (isCustomerStillShopping);
+        }
+        public void CheckoutItems(decimal total, int locId, int custId)
+        {
+            DateTime now = DateTime.Now;
+            Order newOrder = new Order();
+            newOrder.Total = total;
+            newOrder.Date = now;
+            newOrder.LocationId = locId;
+            newOrder.CustomerId = custId;
 
-                } while (stillShopping);
+            _orderBL.AddOrder(newOrder);
 
-            }
+            Console.WriteLine($"Purchase complete! \n\t Date: {newOrder.Date} \n\t Total: ${newOrder.Total} \n");
 
-            public void EditInventory(int id)
+            Console.WriteLine($"Thank you for shopping at Jake's Ice Creamery!");
+            ExitUI();
+        }
+
+        public void EditInventory(int locId)
+        {
+            bool stayEditingLocation = true;
+            Location currentLocation = _locationBL.GetLocationById(locId);
+            do
             {
-                _locationBL.GetLocations();
-                Console.WriteLine($"You are editing. {id}");
-            }
+                Console.WriteLine($"You are editing location {currentLocation.Address} {currentLocation.City}, {currentLocation.State} ({currentLocation.Zipcode})");
+                //display products at particular location
+                int i = 1;
+                int j, h;
+                foreach (var item in _inventoryBL.GetInventories())
+                {
+                    if (item.LocationId == locId)
+                    {
+                        Console.WriteLine($"[{item.Id}] {_productBL.GetProductById(item.ProductId).ProductName}\tQuantity: {item.Quantity} pints");
+                    }
+                    i++;
+                }
+                h = i++;
+                Console.WriteLine($"[{h}] Add new product");
+                j = i++;
+                Console.WriteLine($"[{j}] View order history at Location.");
+                i++;
+                Console.WriteLine($"[{i}] Exit");
+                Console.WriteLine("Enter a number: ");
 
+                //get user input
+                int userInput = int.Parse(Console.ReadLine());
+
+                foreach (var item in _inventoryBL.GetInventories())
+                {
+                    if (userInput == item.Id)
+                    {
+                        UpdateProductInventory(item.ProductId, item.LocationId);
+                    }
+                    else if (userInput == h)
+                    {
+                        AddNewProduct(locId);
+                        break;
+                    }
+                    else if (userInput == j)
+                    {
+                        ViewOrdersAtLocation(locId);
+                        break;
+                    }
+                    else if (userInput == i)
+                    {
+                        ExitUI();
+                    }
+                }
+            } while (stayEditingLocation);
+        }
+        public void ViewOrdersAtLocation(int locId)
+        {
+            foreach (var item in _orderBL.GetOrders())
+            {
+                if (item.LocationId == locId)
+                {
+                    Console.WriteLine(item.ToString());
+                }
+            }
+        }
+        public void AddNewProduct(int locId)
+        {
+            //create new product & inventory for that product
+            Product newProduct = new Product();
+            Inventory newInventory = new Inventory();
+            Console.WriteLine("Please enter product name: ");
+            newProduct.ProductName = Console.ReadLine();
+            Console.WriteLine("Please enter price of product per pint: ");
+            newProduct.ProductPrice = decimal.Parse(Console.ReadLine());
+            Console.WriteLine("Please enter quantity of product in pints: ");
+            newInventory.Quantity = int.Parse(Console.ReadLine());
+            newInventory.LocationId = locId;
+            newInventory.ProductId = newProduct.ProductID;
+
+            _productBL.AddProduct(newProduct);
+            //_inventoryBL.AddInventory(newInventory); TODO: FIND OUT WHY THIS IS BROKEN
+
+            Console.WriteLine($"{newProduct.ProductName} added to products!");
+        }
+        public void UpdateProductInventory(int prodId, int locId)
+        {
+            Console.WriteLine("Enter the number of product(by pint) you want to add.");
+            int addedQuantity = int.Parse(Console.ReadLine());
+
+            Inventory updatedInventory = new Inventory();
+            updatedInventory.Quantity = _inventoryBL.GetQuantity(prodId, locId) + addedQuantity;
+            _inventoryBL.UpdateInventory(_inventoryBL.GetInventoryById(prodId, locId), updatedInventory);
+
+            Console.WriteLine("Product Quantity Updated!");
+        }
         public void ExitUI()
         {
-            Console.WriteLine("Goodbye! Please come again! :)");
+            Console.WriteLine("Goodbye! Please come again!");
+            Console.WriteLine("\t\t_____\t_____\t\t\n\t\t|   |\t|   |\t\t\n\t\t|___|\t|___|\t\t\n\n\t   *** \t\t\t***\n\t     ***\t      ***\n\t\t***\t   ***\n\t\t    ******");
             System.Environment.Exit(1);
         }
     }

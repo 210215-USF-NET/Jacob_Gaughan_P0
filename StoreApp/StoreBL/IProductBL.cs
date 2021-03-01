@@ -6,5 +6,7 @@ namespace StoreBL
     {
         List<Product> GetProducts();
         void AddProduct(Product newProduct);
+        decimal GetProductPrice(int productId);
+        Product GetProductById(int productId);
     }
 }
