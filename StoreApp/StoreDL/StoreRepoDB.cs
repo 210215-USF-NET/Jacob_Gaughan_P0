@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using Model = StoreModels;
 using Entity = StoreDL.Entities;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using StoreModels;
+using Serilog;
+using System;
 
 namespace StoreDL
 {
@@ -40,6 +41,12 @@ namespace StoreDL
             _context.SaveChanges();
             return newLocation;
         }
+        public Location DeleteLocation(Location location2BDeleted)
+        {
+            _context.Locations.Remove(_mapper.ParseLocation(location2BDeleted));
+            _context.SaveChanges();
+            return location2BDeleted;
+        }
         public List<Model.Product> GetProducts()
         {
             return _context.Products.Select(x => _mapper.ParseProduct(x)).ToList();
@@ -62,6 +69,10 @@ namespace StoreDL
             _context.Orders.Add(_mapper.ParseOrder(newOrder));
             _context.SaveChanges();
             return newOrder;
+        }
+        public int GetProductId(int productId)
+        {
+            return GetProductById(productId).ProductID;
         }
         public Product GetProductById(int productId)
         {

@@ -62,13 +62,13 @@ namespace StoreDL.Entities
                     .WithMany(p => p.Inventories)
                     .HasForeignKey(d => d.LocationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__inventory__locat__32CB82C6");
+                    .HasConstraintName("FK__inventory__locat__4D7F7902");
 
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.Inventories)
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__inventory__produ__31D75E8D");
+                    .HasConstraintName("FK__inventory__produ__4C8B54C9");
             });
 
             modelBuilder.Entity<Location>(entity =>
@@ -124,13 +124,13 @@ namespace StoreDL.Entities
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.CustomerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__orders__customer__35A7EF71");
+                    .HasConstraintName("FK__orders__customer__505BE5AD");
 
                 entity.HasOne(d => d.Location)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.LocationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__orders__location__369C13AA");
+                    .HasConstraintName("FK__orders__location__515009E6");
             });
 
             modelBuilder.Entity<Product>(entity =>

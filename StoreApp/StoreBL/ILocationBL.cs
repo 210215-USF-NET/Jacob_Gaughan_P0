@@ -6,6 +6,7 @@ namespace StoreBL
     {
         List<Location> GetLocations();
         void AddLocation(Location newLocation);
+        void DeleteLocation(Location newLocation);
         Location GetLocationById(int locId);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 namespace StoreModels
 {
     /// <summary>
@@ -12,5 +13,27 @@ namespace StoreModels
         public int Id { get; set; }
 
         public override string ToString() => $"{this.Address} {this.City}, {this.State} ({this.Zipcode})";
+        public bool IsValidState(string state)
+        {
+            if(state.Length > 2)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        public bool IsEmptyOrNull(string input)
+        {
+            if(input == "" || input == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
 }

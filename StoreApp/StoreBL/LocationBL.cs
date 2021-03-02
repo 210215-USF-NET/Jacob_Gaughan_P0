@@ -16,7 +16,10 @@ namespace StoreBL
         {
             _repo.AddLocation(newLocation);
         }
-
+        public void DeleteLocation(Location location2BDeleted)
+        {
+            _repo.DeleteLocation(location2BDeleted);
+        }
         public List<Location> GetLocations()
         {
             // TODO add Business Logic

@@ -8,6 +8,10 @@ namespace StoreTests
     {
         //Arrange
         private Customer customer = new Customer();
+        private Inventory inventory = new Inventory();
+        private Location location = new Location();
+        private Order order = new Order();
+        private Product product = new Product();
         
         [Theory]
         [InlineData("testing123@revature.net", true)]
@@ -27,6 +31,28 @@ namespace StoreTests
         public void IsName(string name, bool expected)
         {
             bool result = customer.IsValidName(name);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [InlineData(19.99, true)]
+        [InlineData(10234.32, true)]
+        [InlineData(-10.25, false)]
+        public void IsValidPrice(decimal price, bool expected)
+        {
+            bool result = product.IsValidPrice(price);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [InlineData(19.99, true)]
+        [InlineData(10234.32, true)]
+        [InlineData(-10.25, false)]
+        public void IsValidPrice(decimal price, bool expected)
+        {
+            bool result = product.IsValidPrice(price);
 
             Assert.Equal(expected, result);
         }

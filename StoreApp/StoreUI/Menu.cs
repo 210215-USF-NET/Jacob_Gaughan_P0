@@ -1,7 +1,7 @@
 using System;
 using StoreModels;
 using StoreBL;
-using System.Collections.Generic;
+using Serilog;
 using System.Linq;
 
 namespace StoreUI
@@ -28,7 +28,6 @@ namespace StoreUI
         public void Start()
         {
             bool stayMainMenu = true;
-
             Console.WriteLine("Hello! Welcome to Jake's Ice Creamery! :D");
 
             do
@@ -57,12 +56,6 @@ namespace StoreUI
                     case "3":
                         ExitUI();
                         break;
-                    case "4":
-                        foreach (var item in _customerBL.GetCustomers())
-                        {
-                            Console.WriteLine(item.ToString());
-                        }
-                        break;
                     default:
                         Console.WriteLine("Not part of menu! Please try again.");
                         continue;
@@ -83,6 +76,7 @@ namespace StoreUI
             _customerBL.AddCustomer(newCustomer);
 
             Console.WriteLine($"New customer added! Welcome {newCustomer.CustomerName}!");
+            Log.Information($"New customer added. Details:{newCustomer.ToString()}");
 
             StartShopping(newCustomer);
         }
@@ -133,12 +127,9 @@ namespace StoreUI
                     case "2":
                         ExitUI();
                         break;
-                    case "3":
-                        ExitUI();
-                        break;
                     default:
                         Console.WriteLine("Not part of menu! Please try again.");
-                        continue;
+                        break;
                 }
 
             } while (stayCustomerMenu);
@@ -157,23 +148,24 @@ namespace StoreUI
                     Console.WriteLine($"[{item.Id}] {item.Address} {item.City}, {item.State} ({item.Zipcode})");
                     i++;
                 }
-                i++;
                 Console.WriteLine($"[{i}] Exit");
                 Console.WriteLine("Enter a number: ");
 
                 //get user input
                 int userInput = int.Parse(Console.ReadLine());
 
-                foreach (var item in _locationBL.GetLocations())
+                if (_locationBL.GetLocationById(userInput) != null)
                 {
-                    if (userInput == item.Id)
-                    {
-                        ShopInventory(item.Id, custId);
-                    }
-                    else if (userInput == i)
-                    {
-                        ExitUI();
-                    }
+                    ShopInventory(userInput, custId);
+                }
+                else if (userInput == i)
+                {
+                    ExitUI();
+                }
+                else
+                {
+                    Console.WriteLine("Not part of menu! Please try again.");
+                    continue;
                 }
             } while (stayChooseLocation);
         }
@@ -193,29 +185,31 @@ namespace StoreUI
                     i++;
                 }
                 j = i;
-                Console.WriteLine($"[{j}] Add New Location");
                 i++;
+                Console.WriteLine($"[{j}] Add New Location");
                 Console.WriteLine($"[{i}] Exit");
                 Console.WriteLine("Enter a number: ");
 
                 //get user input
                 int userInput = int.Parse(Console.ReadLine());
 
-                foreach (var item in _locationBL.GetLocations())
+                if (_locationBL.GetLocationById(userInput) != null)
                 {
-                    if (userInput == item.Id)
-                    {
-                        EditInventory(item.Id);
-                    }
-                    else if (userInput == j)
-                    {
-                        AddNewLocation();
-                        continue;
-                    }
-                    else if (userInput == i)
-                    {
-                        ExitUI();
-                    }
+                    EditInventory(userInput);
+                }
+                else if (userInput == j)
+                {
+                    AddNewLocation();
+                    break;
+                }
+                else if (userInput == i)
+                {
+                    ExitUI();
+                }
+                else
+                {
+                    Console.WriteLine("Not part of menu! Please try again.");
+                    continue;
                 }
             } while (stayChooseLocation);
         }
@@ -234,17 +228,45 @@ namespace StoreUI
 
             _locationBL.AddLocation(newLocation);
 
-            Console.WriteLine($"New Location added at {newLocation.Address} {newLocation.City}, {newLocation.State} ({newLocation.Zipcode})!");
+            Console.WriteLine($"New location added at {newLocation.Address} {newLocation.City}, {newLocation.State} ({newLocation.Zipcode})!");
+            Log.Information($"New location added. Details:{newLocation.ToString()}");
         }
         public void ViewPreviousOrders(int currentCustomerId)
+        {
+            Console.WriteLine("Sort orders by:");
+            Console.WriteLine("[0] (Date) Newest - Oldest");
+            Console.WriteLine("[1] (Date) Oldest - Newest");
+            Console.WriteLine("[2] (Price) High - Low");
+            Console.WriteLine("[3] (Price) Low - High");
+            string sortBy = Console.ReadLine();
+
+            switch (sortBy)
+            {
+                case "0":
+                    PrevCustOrdersNewToOld(currentCustomerId);
+                    break;
+                case "1":
+                    PrevCustOrdersOldToNew(currentCustomerId);
+                    break;
+                case "2":
+                    PrevCustOrdersPriceHighToLow(currentCustomerId);
+                    break;
+                case "3":
+                    PrevCustOrdersPriceLowToHigh(currentCustomerId);
+                    break;
+                default:
+                    Console.WriteLine("Not part of menu! Please try again.");
+                    break;
+            };
+        }
+        public void PrevCustOrdersNewToOld(int custId)
         {
             bool ordersFound = false;
 
             foreach (var item in _orderBL.GetOrders())
             {
-                if (item.CustomerId == currentCustomerId)
+                if (item.CustomerId == custId)
                 {
-                    Console.WriteLine(item.ToString());
                     ordersFound = true;
                 }
             }
@@ -253,41 +275,209 @@ namespace StoreUI
             {
                 Console.WriteLine("No orders have been placed.");
             }
-
-            Console.WriteLine("Sort orders by:");
-            Console.WriteLine("[0] Newest - Oldest");
-            Console.WriteLine("[1] Oldest - Newest");
-            string sortBy = Console.ReadLine();
-
-            switch (sortBy)
+            else
             {
-                case "0":
-                    PrevOrdersNewToOld(currentCustomerId);
-                    break;
-                case "1":
-                    PrevOrdersOldToNew(currentCustomerId);
-                    break;
-            };
-        }
-        public void PrevOrdersNewToOld(int custId)
-        {
-            foreach (Order order in _orderBL.GetOrders().OrderByDescending(o => o.Date).ToList())
-            {
-                if (order.CustomerId == custId)
+                foreach (Order order in _orderBL.GetOrders().OrderByDescending(o => o.Date).ToList())
                 {
-                    Console.WriteLine(order.ToString());
+                    if (order.CustomerId == custId)
+                    {
+                        Console.WriteLine(order.ToString());
+                    }
                 }
             }
         }
-        public void PrevOrdersOldToNew(int custId)
+        public void PrevCustOrdersOldToNew(int custId)
         {
-            foreach (Order order in _orderBL.GetOrders().OrderBy(o => o.Date).ToList())
+            bool ordersFound = false;
+
+            foreach (var item in _orderBL.GetOrders())
             {
-                if (order.CustomerId == custId)
+                if (item.CustomerId == custId)
                 {
-                    Console.WriteLine(order.ToString());
+                    ordersFound = true;
                 }
             }
+
+            if (!ordersFound)
+            {
+                Console.WriteLine("No orders have been placed.");
+            }
+            else
+            {
+                foreach (Order order in _orderBL.GetOrders().OrderBy(o => o.Date).ToList())
+                {
+                    if (order.CustomerId == custId)
+                    {
+                        Console.WriteLine(order.ToString());
+                    }
+                }
+            }
+        }
+        public void PrevCustOrdersPriceHighToLow(int custId)
+        {
+            bool ordersFound = false;
+
+            foreach (var item in _orderBL.GetOrders())
+            {
+                if (item.CustomerId == custId)
+                {
+                    ordersFound = true;
+                }
+            }
+
+            if (!ordersFound)
+            {
+                Console.WriteLine("No orders have been placed.");
+            }
+            else
+            {
+                foreach (Order order in _orderBL.GetOrders().OrderByDescending(o => o.Total).ToList())
+                {
+                    if (order.CustomerId == custId)
+                    {
+                        Console.WriteLine(order.ToString());
+                    }
+                }
+            }
+        }
+        public void PrevCustOrdersPriceLowToHigh(int custId)
+        {
+            bool ordersFound = false;
+
+            foreach (var item in _orderBL.GetOrders())
+            {
+                if (item.CustomerId == custId)
+                {
+                    ordersFound = true;
+                }
+            }
+
+            if (!ordersFound)
+            {
+                Console.WriteLine("No orders have been placed.");
+            }
+            else
+            {
+                foreach (Order order in _orderBL.GetOrders().OrderBy(o => o.Total).ToList())
+                {
+                    if (order.CustomerId == custId)
+                    {
+                        Console.WriteLine(order.ToString());
+                    }
+                }
+            }
+        }
+        public void PrevLocOrdersNewToOld(int locId)
+        {
+            bool ordersFound = false;
+
+            foreach (var item in _orderBL.GetOrders())
+            {
+                if (item.LocationId == locId)
+                {
+                    ordersFound = true;
+                }
+            }
+
+            if (!ordersFound)
+            {
+                Console.WriteLine("No orders have been placed.");
+            }
+            else
+            {
+                foreach (Order order in _orderBL.GetOrders().OrderByDescending(o => o.Date).ToList())
+                {
+                    if (order.LocationId == locId)
+                    {
+                        Console.WriteLine(order.ToString());
+                    }
+                }
+            }
+
+
+        }
+        public void PrevLocOrdersOldToNew(int locId)
+        {
+            bool ordersFound = false;
+
+            foreach (var item in _orderBL.GetOrders())
+            {
+                if (item.LocationId == locId)
+                {
+                    ordersFound = true;
+                }
+            }
+
+            if (!ordersFound)
+            {
+                Console.WriteLine("No orders have been placed.");
+            }
+            else
+            {
+                foreach (Order order in _orderBL.GetOrders().OrderBy(o => o.Date).ToList())
+                {
+                    if (order.LocationId == locId)
+                    {
+                        Console.WriteLine(order.ToString());
+                    }
+                }
+            }
+        }
+        public void PrevLocOrdersPriceHighToLow(int locId)
+        {
+            bool ordersFound = false;
+
+            foreach (var item in _orderBL.GetOrders())
+            {
+                if (item.LocationId == locId)
+                {
+                    ordersFound = true;
+                }
+            }
+
+            if (!ordersFound)
+            {
+                Console.WriteLine("No orders have been placed.");
+            }
+            else
+            {
+                foreach (Order order in _orderBL.GetOrders().OrderByDescending(o => o.Total).ToList())
+                {
+                    if (order.LocationId == locId)
+                    {
+                        Console.WriteLine(order.ToString());
+                    }
+                }
+            }
+
+        }
+        public void PrevLocOrdersPriceLowToHigh(int locId)
+        {
+            bool ordersFound = false;
+
+            foreach (var item in _orderBL.GetOrders())
+            {
+                if (item.LocationId == locId)
+                {
+                    ordersFound = true;
+                }
+            }
+
+            if (!ordersFound)
+            {
+                Console.WriteLine("No orders have been placed.");
+            }
+            else
+            {
+                foreach (Order order in _orderBL.GetOrders().OrderBy(o => o.Total).ToList())
+                {
+                    if (order.LocationId == locId)
+                    {
+                        Console.WriteLine(order.ToString());
+                    }
+                }
+            }
+
         }
         public void ShopInventory(int locId, int custId)
         {
@@ -296,15 +486,20 @@ namespace StoreUI
             do
             {
                 Console.WriteLine("Which product you would like to purchase?");
-
                 foreach (var item in _locationBL.GetLocations())
                 {
                     if (item.Id == locId)
                     {
                         foreach (var product in _productBL.GetProducts())
                         {
-                            //removed "\t{_inventoryBL.GetQuantity(product.ProductID, locId)}" in stock because it was ruining everything
-                            Console.WriteLine($"[{product.ProductID}] {product.ProductName} {product.ProductPrice}/Pint");
+                            if (_inventoryBL.GetInventoryById(product.ProductID, locId) == null)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                Console.WriteLine($"[{product.ProductID}] {product.ProductName} {product.ProductPrice}/Pint \t{_inventoryBL.GetQuantity(product.ProductID, locId)} in stock");
+                            }
                         }
                     }
                 }
@@ -325,8 +520,6 @@ namespace StoreUI
                 {
                     Console.WriteLine("Sorry we do not have that in stock.");
                 }
-
-                runningTotal = runningTotal + _productBL.GetProductPrice(userInputKind);
 
                 bool isCustomerStillShopping = true;
                 do
@@ -366,6 +559,7 @@ namespace StoreUI
             _orderBL.AddOrder(newOrder);
 
             Console.WriteLine($"Purchase complete! \n\t Date: {newOrder.Date} \n\t Total: ${newOrder.Total} \n");
+            Log.Information($"New order completed. Details:{newOrder.ToString()}");
 
             Console.WriteLine($"Thank you for shopping at Jake's Ice Creamery!");
             ExitUI();
@@ -420,18 +614,41 @@ namespace StoreUI
                     {
                         ExitUI();
                     }
+                    else
+                    {
+                        Console.WriteLine("Not part of menu! Please try again.");
+                        break;
+                    }
                 }
             } while (stayEditingLocation);
         }
         public void ViewOrdersAtLocation(int locId)
         {
-            foreach (var item in _orderBL.GetOrders())
+            Console.WriteLine("Sort location orders by:");
+            Console.WriteLine("[0] (Date) Newest - Oldest");
+            Console.WriteLine("[1] (Date) Oldest - Newest");
+            Console.WriteLine("[2] (Price) High - Low");
+            Console.WriteLine("[3] (Price) Low - High");
+            string sortBy = Console.ReadLine();
+
+            switch (sortBy)
             {
-                if (item.LocationId == locId)
-                {
-                    Console.WriteLine(item.ToString());
-                }
-            }
+                case "0":
+                    PrevLocOrdersNewToOld(locId);
+                    break;
+                case "1":
+                    PrevLocOrdersOldToNew(locId);
+                    break;
+                case "2":
+                    PrevLocOrdersPriceHighToLow(locId);
+                    break;
+                case "3":
+                    PrevLocOrdersPriceLowToHigh(locId);
+                    break;
+                default:
+                    Console.WriteLine("Not part of menu! Please try again.");
+                    break;
+            };
         }
         public void AddNewProduct(int locId)
         {
@@ -444,11 +661,13 @@ namespace StoreUI
             newProduct.ProductPrice = decimal.Parse(Console.ReadLine());
             Console.WriteLine("Please enter quantity of product in pints: ");
             newInventory.Quantity = int.Parse(Console.ReadLine());
-            newInventory.LocationId = locId;
-            newInventory.ProductId = newProduct.ProductID;
 
             _productBL.AddProduct(newProduct);
-            //_inventoryBL.AddInventory(newInventory); TODO: FIND OUT WHY THIS IS BROKEN
+
+            newInventory.ProductId = _productBL.GetProducts().Last().ProductID;
+            newInventory.LocationId = locId;
+
+            _inventoryBL.AddInventory(newInventory);
 
             Console.WriteLine($"{newProduct.ProductName} added to products!");
         }

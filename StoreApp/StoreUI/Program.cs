@@ -1,5 +1,5 @@
 ﻿using System;
-using StoreModels;
+using Serilog;
 using StoreBL;
 using StoreDL;
 using StoreDL.Entities;
@@ -17,6 +17,12 @@ namespace StoreUI
         /// <param name="args"></param>
         static void Main(string[] args)
         {
+            //configure logger
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .WriteTo.File("../StoreDL/logs/Logs.json")
+                .CreateLogger();
+
             //get the config file
             var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
