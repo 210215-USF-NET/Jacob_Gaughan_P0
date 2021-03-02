@@ -47,12 +47,34 @@ namespace StoreTests
         }
 
         [Theory]
-        [InlineData(19.99, true)]
-        [InlineData(10234.32, true)]
-        [InlineData(-10.25, false)]
-        public void IsValidPrice(decimal price, bool expected)
+        [InlineData("NY", true)]
+        [InlineData("KSD", false)]
+        [InlineData("Kansas", false)]
+        public void IsValidState(string state, bool expected)
         {
-            bool result = product.IsValidPrice(price);
+            bool result = location.IsValidState(state);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [InlineData("67601", true)]
+        [InlineData("123456", false)]
+        [InlineData("951230234", false)]
+        public void IsValidZipcode(string zipcode, bool expected)
+        {
+            bool result = location.IsValidZipcode(zipcode);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [InlineData(0, true)]
+        [InlineData(-1, false)]
+        [InlineData(-25, false)]
+        public void IsValidQuantity(int quantity, bool expected)
+        {
+            bool result = inventory.IsValidQuantity(quantity);
 
             Assert.Equal(expected, result);
         }

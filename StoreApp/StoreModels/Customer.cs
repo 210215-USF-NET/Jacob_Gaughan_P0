@@ -20,7 +20,7 @@ namespace StoreModels
             }
             set
             {
-                if (value == null || value.Equals(""))
+                if (IsEmptyOrNull(value))
                 {
                     throw new ArgumentNullException("Customer name can't be empty or null.");
                 }
