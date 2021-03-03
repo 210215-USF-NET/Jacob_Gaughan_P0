@@ -29,6 +29,13 @@ namespace StoreDL
             .Select(x => _mapper.ParseCustomer(x))
             .ToList();
         }
+        public Customer GetCustomerByName(string name)
+        {
+            return _context.Customers
+            .Select(x => _mapper.ParseCustomer(x))
+            .ToList()
+            .FirstOrDefault(x => x.CustomerName == name);
+        }
         public List<Model.Location> GetLocations()
         {
             return _context.Locations

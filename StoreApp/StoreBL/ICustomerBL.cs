@@ -6,5 +6,6 @@ namespace StoreBL
     {
         List<Customer> GetCustomers();
         void AddCustomer(Customer newCustomer);
+        Customer GetCustomerByName(string name);
     }
 }

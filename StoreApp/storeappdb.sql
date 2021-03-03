@@ -48,7 +48,7 @@ create table orders
 
 -- Adding seed data
 insert into customers (name, email) values
-('Jacob Gaughan', 'jacob.gaughan@revature.net'), ('Sam Garrison', 'sammyG@gmail.com');
+('John Doe', 'john@johndoe.net'), ('Sam Garrison', 'sammyG@gmail.com');
 
 insert into locations (address, city, state, zipcode) values
 ('225 West 8th St.', 'Hays', 'KS', '67601'), ('3924 Hillcrest Dr.', 'Durango', 'CO', '81302'), ('1920 Park St.', 'Charleston', 'SC', '29401');
@@ -60,7 +60,7 @@ insert into inventory (quantity, productId, locationId) values
 (4, 1, 1), (4, 2, 1), (4, 3, 1), (5, 1, 2), (5, 2, 2), (5, 3, 2), (6, 1, 3), (6, 2, 3), (6, 3, 3);
 
 insert into orders (total, date, customerId, locationId) values
-(25.00, convert(datetime,'28-04-20 05:30:12 PM',5), 1, 1), (50.00, convert(datetime,'07-08-20 11:20:00 AM',5), 2, 2), (20.00, convert(datetime,'07-08-20 9:20:00 PM',5), 2, 1);
+(25.00, convert(datetime,'28-04-20 05:30:12 PM',5), 1, 1), (50.00, convert(datetime,'07-08-20 11:20:00 AM',5), 2, 2), (20.00, convert(datetime,'07-08-20 9:20:00 PM',5), 2, 1), (75.00, convert(datetime,'01-01-21 01:25:00 PM',5), 2, 3);
 
 select * from products inner join inventory on products.id = inventory.productId;
 

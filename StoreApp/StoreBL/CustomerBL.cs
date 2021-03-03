@@ -20,5 +20,10 @@ namespace StoreBL
         {
             return _repo.GetCustomers();
         }
+
+        public Customer GetCustomerByName(string name)
+        {
+            return _repo.GetCustomerByName(name);
+        }
     }
 }

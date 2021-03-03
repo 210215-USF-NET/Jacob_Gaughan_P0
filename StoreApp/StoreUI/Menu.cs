@@ -71,14 +71,14 @@ namespace StoreUI
             Console.WriteLine("Please enter customers name: ");
             newCustomer.CustomerName = Console.ReadLine();
             Console.WriteLine("Please enter email: ");
-            newCustomer.CustomerEmail = Console.ReadLine(); ;
+            newCustomer.CustomerEmail = Console.ReadLine();
 
             _customerBL.AddCustomer(newCustomer);
 
             Console.WriteLine($"New customer added! Welcome {newCustomer.CustomerName}!");
             Log.Information($"New customer added. Details:{newCustomer.ToString()}");
 
-            StartShopping(newCustomer);
+            StartShopping(_customerBL.GetCustomerByName(newCustomer.CustomerName));
         }
         public void SearchCustomers()
         {
@@ -585,7 +585,7 @@ namespace StoreUI
                 }
                 h = i++;
                 Console.WriteLine($"[{h}] Add new product");
-                j = i++;
+                j = i;
                 Console.WriteLine($"[{j}] View order history at Location.");
                 i++;
                 Console.WriteLine($"[{i}] Exit");
@@ -593,6 +593,31 @@ namespace StoreUI
 
                 //get user input
                 int userInput = int.Parse(Console.ReadLine());
+
+                if (_inventoryBL.GetInventoryById(userInput, locId) != null)
+                {
+                    UpdateProductInventory(userInput, locId);
+                    continue;
+                }
+                else if (userInput == h)
+                {
+                    AddNewProduct(locId);
+                    continue;
+                }
+                else if (userInput == j)
+                {
+                    ViewOrdersAtLocation(locId);
+                    continue;
+                }
+                else if (userInput == i)
+                {
+                    ExitUI();
+                }
+                else
+                {
+                    Console.WriteLine("Not part of menu! Please try again.");
+                    continue;
+                }
 
                 foreach (var item in _inventoryBL.GetInventories())
                 {
